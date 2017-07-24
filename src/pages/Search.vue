@@ -5,27 +5,27 @@
       <input type="search">
     </div>
     <ul class="search-category">
-      <li><span>电影</span><span>影院热播</span></li>
-      <li><span>电视</span><span>正在热播</span></li>
-      <li><span>图书</span><span>畅销排行</span></li>
-      <li><span>同城</span><span>周末活动</span></li>
-      <li><span>小组</span><span>志趣相投</span></li>
-      <li><span>音乐</span><span>新碟榜</span></li>
-      <li><span>阅读</span><span>电子书</span></li>
-      <li><span>游戏</span><span>虚拟世界</span></li>
-      <li><span>应用</span><span>玩手机</span></li>
-      <li><span>东西</span><span>心爱之物</span></li>
-      <li><span>FM</span><span>红星歌单</span></li>
-      <li><span>市集</span><span>购买原创</span></li>
+      <li><router-link to="/movie"><span>电影</span><span>影院热播</span></router-link></li>
+      <li><router-link to="/tv"><span>电视</span><span>正在热播</span></router-link></li>
+      <li><router-link to="/book"><span>图书</span><span>畅销排行</span></router-link></li>
+      <li><router-link to="/location"><span>同城</span><span>周末活动</span></router-link></li>
+      <li><router-link to="/group"><span>小组</span><span>志趣相投</span></router-link></li>
+      <li><router-link to="/music"><span>音乐</span><span>新碟榜</span></router-link></li>
+      <li><router-link to="/"><span>阅读</span><span>电子书</span></router-link></li>
+      <li><router-link to="/"><span>游戏</span><span>虚拟世界</span></router-link></li>
+      <li><router-link to="/"><span>应用</span><span>玩手机</span></router-link></li>
+      <li><router-link to="/"><span>东西</span><span>心爱之物</span></router-link></li>
+      <li><router-link to="/"><span>FM</span><span>红星歌单</span></router-link></li>
+      <li><router-link to="/"><span>市集</span><span>购买原创</span></router-link></li>
     </ul>
     <div class="search-app">
       <div>
-        <router-link to="#">注册账号</router-link>
-        <router-link to="#">登录豆瓣</router-link>
+        <router-link to="/">注册账号</router-link>
+        <router-link to="/">登录豆瓣</router-link>
       </div>
       <div>
-        <router-link to="#">使用桌面版</router-link>
-        <router-link to="#">使用豆瓣APP</router-link>
+        <router-link to="/">使用桌面版</router-link>
+        <router-link to="/">使用豆瓣APP</router-link>
       </div>
     </div>
   </div>
@@ -50,6 +50,8 @@ export default {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  background-color: white;
+  z-index: 1000;
 }
 .search-header {
   width: 100%;

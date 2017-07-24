@@ -1,12 +1,17 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <appHeader></appHeader>
+    <router-view class="main-view"></router-view>
   </div>
 </template>
 
 <script>
+import appHeader from './components/appHeader'
 export default {
-  name: 'app'
+  name: 'app',
+  components: {
+    appHeader
+  }
 }
 </script>
 
@@ -22,5 +27,9 @@ body { /* 默认样式 */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
+}
+.main-view {
+  position: relative;
+  top: 47px;
 }
 </style>
