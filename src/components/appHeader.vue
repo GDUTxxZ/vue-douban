@@ -29,6 +29,7 @@ export default {
   text-align: right;
   vertical-align: middle;
   z-index: 999;
+  background-color: white;
 }
 .header-home-btn {
   float: left;

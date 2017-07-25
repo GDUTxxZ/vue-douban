@@ -28,6 +28,33 @@ app.all('*', (req, res, next) => {
   console.log(req.originalUrl)
   next()
 })
+var https = require('https')
+app.get('/fake', (req, res) => { // 转发请求
+  let query = req.query
+  let data = ''
+  console.log(query)
+  if (query) {
+    for (let key in query) {
+      if (query.hasOwnProperty(key) && key !== 'url') {
+        data += key + "=" + query[key] + "&"
+      }
+    }
+  }
+  data = data.slice(0, data.length-1)
+  https.get(query.url + '?' + data, function(response) {
+    var recommend = '';//存储整个页面的Html
+    response.on('data', function(chunk) {
+      recommend += chunk;
+    });
+    response.on('end', function() {
+      res.write(recommend)
+      res.send()
+    });
+    response.on('error', (err) => {
+      console.log(err);
+    })  
+  })
+})
 //----------------华丽的分割线------------------------
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
