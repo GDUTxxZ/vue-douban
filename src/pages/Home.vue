@@ -134,12 +134,14 @@ export default {
   float: right;
   width: 25.6%;
   margin-left: 25px;
+  margin-bottom: 10px;
 }
 .recommend-item-img div {
   padding-top: 100%;
 }
 .recommend-item-footer {
   text-align: right;
+  clear: right;
 }
 .recommend-item-footer span:nth-child(1) {
   float: left;

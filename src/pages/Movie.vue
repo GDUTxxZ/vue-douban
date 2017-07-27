@@ -1,8 +1,8 @@
 <template>
   <div>
-    <scroller scrollTitle="影院热映" scrollHref="/movie" :scrollData="movie.movieInTheaters"></scroller>
-    <scroller scrollTitle="免费在线观影" scrollHref="/movie" :scrollData="movie.movieFree"></scroller>
-    <scroller scrollTitle="新片速递" scrollHref="/movie" :scrollData="movie.movieLast"></scroller>
+    <scroller scrollTitle="影院热映" scrollHref="/movie" :scrollData="movie.movieInTheaters.subjects"></scroller>
+    <scroller scrollTitle="免费在线观影" scrollHref="/movie" :scrollData="movie.movieFree.subjects"></scroller>
+    <scroller scrollTitle="新片速递" scrollHref="/movie" :scrollData="movie.movieLast.subjects"></scroller>
   </div>
 </template>
 
