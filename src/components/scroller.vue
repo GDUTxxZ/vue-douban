@@ -6,17 +6,19 @@
     </div>
     <ul class="scroller-movie-list">
       <li class="scroller-movie-item" v-for="index in 8">
-        <div class="scroller-movie-img" :style="{backgroundImages: imgUrl[index].background}">
-          <div></div>
-        </div>
-        <span>{{scrollData[index - 1].title}}</span>
-        <div v-if="scrollData[index - 1].rating.average === 0" class="scroller-movie-rating">
-          <span>暂无评分</span>
-        </div>
-        <div v-else class="scroller-movie-rating">
-          <canvas class="scroller-movie-star" width="55" height="15"></canvas>
-          <span>{{scrollData[index - 1].rating.average}}</span>
-        </div>
+        <router-link :to="'/movie/' + scrollData[index - 1].id">
+          <div class="scroller-movie-img" :style="{background: imgUrl[index - 1].background}">
+            <div></div>
+          </div>
+          <span>{{scrollData[index - 1].title}}</span>
+          <div v-if="scrollData[index - 1].rating.average === 0 || scrollData[index - 1].rating.value === 0" class="scroller-movie-rating">
+            <span>暂无评分</span>
+          </div>
+          <div v-else class="scroller-movie-rating">
+            <canvas class="scroller-movie-star" width="55" height="15"></canvas>
+            <span>{{scrollData[index - 1].rating.average || scrollData[index - 1].rating.value}}</span>
+          </div>
+        </router-link>
       </li>
     </ul>
   </div>
@@ -27,17 +29,25 @@ export default {
   props: ['scrollTitle', 'scrollHref', 'scrollData'],
   computed: {
     imgUrl () {
-      return this.scrollData.map((item) => {
-        return {
-          background: 'url(' + item.images.medium + ') cover center'
-        }
-      })
+      if (this.scrollData[0].cover !== undefined) {
+        return this.scrollData.map((item) => {
+          return {
+            background: 'url(' + item.cover.url + ')'
+          }
+        })
+      } else {
+        return this.scrollData.map((item) => {
+          return {
+            background: 'url(' + item.images.medium + ')'
+          }
+        })
+      }
     }
   },
   methods: {
     paintStars () {
       console.log('paintStars')
-      function star (ctx, x, y, R, clearWidth) {
+      function star (ctx, x, y, R) {
         let r = R * 4 / 7
         ctx.beginPath()
         ctx.moveTo(x, y)
@@ -48,19 +58,26 @@ export default {
         ctx.lineTo(x + R * Math.cos(18 * Math.PI / 180), y - R * Math.sin(18 * Math.PI / 180))
         ctx.closePath()
         ctx.fill()
-        ctx.clearRect(54.5, 2.5, -(clearWidth), 10)
-        ctx.globalCompositeOperation = 'destination-over'
       }
+      var canvasList = this.$el.getElementsByClassName('scroller-movie-star')
       for (let canvasId = 0, i = 0; canvasId < 8; canvasId++) {
-        if (this.scrollData[canvasId].rating.average === 0) {
+        let rating = this.scrollData[canvasId].rating.average || this.scrollData[canvasId].rating.value
+        if (rating === undefined) {
           continue
         }
-        var canvas = document.getElementsByClassName('scroller-movie-star')[i++]
+        let canvas = canvasList[i++]
         var ctx = canvas.getContext('2d')
         ctx.fillStyle = 'rgb(255,172,45)'
         ctx.strokeStyle = 'rgb(255,172,45)'
         for (let i = 0; i < 5; i++) {
-          star(ctx, 5.5 + i * 11, 7.5, 5, (10 - this.scrollData[canvasId].rating.average) / 10 * 54)
+          star(ctx, 5.5 + i * 11, 7.5, 5)
+        }
+        ctx.clearRect(54.5, 2.5, -((10 - rating) / 10 * 54), 10)
+        ctx.globalCompositeOperation = 'destination-over'
+        ctx.fillStyle = '#aaa'
+        ctx.strokeStyle = '#aaa'
+        for (let i = 0; i < 5; i++) {
+          star(ctx, 5.5 + i * 11, 7.5, 5, (10 - rating) / 10 * 54)
         }
       }
     }
@@ -78,7 +95,7 @@ export default {
 <style scoped>
 .scroller {
   box-sizing: border-box;
-  padding: 0 20px;
+  padding: 8px 20px;
 }
 .scroller-title {
   height: 45px;
@@ -107,6 +124,9 @@ export default {
   text-overflow: ellipsis;
   margin-left: 1.12rem;
   width: 100px;
+}
+.scroller-movie-item a {
+  color: #111;
 }
 .scroller-movie-img {
   width: 100%;

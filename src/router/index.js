@@ -6,6 +6,7 @@ import Status from '@/pages/Status'
 import Group from '@/pages/Group'
 import Movie from '@/pages/Movie'
 import Search from '@/pages/Search'
+import movieItem from '@/pages/movieItem'
 Vue.use(Router)
 
 export default new Router({
@@ -29,6 +30,11 @@ export default new Router({
       path: '/movie',
       name: 'Movie',
       component: Movie
+    },
+    {
+      path: '/movie/:movieId',
+      name: 'movieItem',
+      component: movieItem
     },
     {
       path: '/book',
