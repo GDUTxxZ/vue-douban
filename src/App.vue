@@ -33,5 +33,7 @@ body { /* 默认样式 */
 .main-view {
   position: relative;
   top: 47px;
+  max-width: 650px;
+  margin: 0 auto;
 }
 </style>
