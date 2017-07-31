@@ -25,15 +25,19 @@ export default {
   border: none;
 }
 body { /* 默认样式 */
-  font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+  font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
+  font-size: 14px;
 }
 .main-view {
   position: relative;
   top: 47px;
   max-width: 650px;
   margin: 0 auto;
+}
+a {
+  color: #42bd56;
 }
 </style>

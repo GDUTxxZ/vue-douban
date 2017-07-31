@@ -77,7 +77,7 @@ export default {
         ctx.fillStyle = '#aaa'
         ctx.strokeStyle = '#aaa'
         for (let i = 0; i < 5; i++) {
-          star(ctx, 5.5 + i * 11, 7.5, 5, (10 - rating) / 10 * 54)
+          star(ctx, 5.5 + i * 11, 7.5, 5)
         }
       }
     }
