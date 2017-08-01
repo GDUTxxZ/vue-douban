@@ -21,8 +21,8 @@ export default {
 * { /* 清空样式 */
   margin: 0;
   padding: 0;
-  text-decoration: none;
   border: none;
+  list-style-type: none;
 }
 body { /* 默认样式 */
   font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;
@@ -39,5 +39,6 @@ body { /* 默认样式 */
 }
 a {
   color: #42bd56;
+  text-decoration: none;
 }
 </style>
