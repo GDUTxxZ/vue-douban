@@ -75,23 +75,41 @@
         </ul>
         <button>查看全部讨论</button>
       </div>
-      <div class="discuss">
+      <div class="review">
         <h2>{{movie.title}}的影评({{review.total}})</h2>
         <ul>
-          <li v-for="item in discuss.forum_topics">
-            <div class="discuss-item-title">{{item.title}}</div>
-            <div class="discuss-response-number">{{item.comments_count}}人回应</div>
+          <li v-for="item in review.reviews">
+            <h3>{{item.title}}</h3>
+            {{item.user.name}}<canvas class="review-star" width="70" height="18"></canvas>
+            <p>{{item.abstract}}</p>
+            <span class="review-useful">{{item.useful_count}} 有用</span>
           </li>
         </ul>
-        <button>查看全部讨论</button>
+        <button>查看全部影评</button>
+      </div>
+      <div class="doulist">
+        <h2>推荐{{movie.title}}的豆列</h2>
+        <ul>
+          <li>正在上映</li>
+          <li>想看的电影太多怕忘了</li>
+          <li>豆瓣电影【口碑榜】2017-04-27更新</li>
+          <li>ღ♩♪生活有这些期待很有动力♫♬ღ</li>
+          <li class="line"></li>
+          <li>【中国内地电影票房总排行】</li>
+          <li>影视，良心制作大杂烩</li>
+          <li>那些超五星的电影</li>
+          <li>日常～那些杂七杂八的</li>
+        </ul>
       </div>
     </div>
+    <doubanApp></doubanApp>
   </div>
 </template>
 
 <script>
 import ajax from '../lib/ajax'
 import banner from '../components/banner'
+import doubanApp from '../components/doubanApp'
 export default {
   data () {
     return {
@@ -107,7 +125,8 @@ export default {
     }
   },
   components: {
-    banner
+    banner,
+    doubanApp
   },
   computed: {
     movieInfo () {
@@ -120,7 +139,7 @@ export default {
       }
     },
     shortSummary () {
-      return this.movie.summary.slice(0, 70) + '...'
+      return this.movie.summary.slice(0, 75) + '...'
     },
     tags () {
       return [].concat(this.movie.countries, this.movie.genres)
@@ -135,7 +154,6 @@ export default {
   },
   methods: {
     fetchData () {
-      console.log('fetchData')
       ajax({
         url: '/fake',
         method: 'GET',
@@ -236,7 +254,29 @@ export default {
       console.log(this.$el)
       let canvasList = this.$el.getElementsByClassName('comment-star')
       let commentList = this.comment.interests
-      for (var i = this.commentNum - 1; i >= 0; i--) {
+      for (var i = 3; i >= 0; i--) {
+        let rating = commentList[i].rating.value * 2
+        let canvas = canvasList[i]
+        let ctx = canvas.getContext('2d')
+        ctx.fillStyle = 'rgb(255,183,16)'
+        ctx.strokeStyle = 'rgb(255,183,16)'
+        for (let i = 0; i < 5; i++) {
+          this.paintStar(ctx, 7 + i * 14, 9, 7)
+        }
+        ctx.clearRect(70, 0, -((10 - rating) / 10 * 70), 18)
+        ctx.globalCompositeOperation = 'destination-over'
+        ctx.fillStyle = '#ddd'
+        ctx.strokeStyle = '#ddd'
+        for (let i = 0; i < 5; i++) {
+          this.paintStar(ctx, 7 + i * 14, 9, 7)
+        }
+      }
+    },
+    paintReviewStars () {
+      console.log(this.$el)
+      let canvasList = this.$el.getElementsByClassName('review-star')
+      let commentList = this.review.reviews
+      for (var i = 4; i >= 0; i--) {
         let rating = commentList[i].rating.value * 2
         let canvas = canvasList[i]
         let ctx = canvas.getContext('2d')
@@ -266,6 +306,7 @@ export default {
   updated () {
     this.paintMovieStars()
     this.paintCommentStars()
+    this.paintReviewStars()
   }
 }
 </script>
@@ -335,7 +376,6 @@ h2 {
 }
 .summary {
   text-align: left;
-  margin: 0 18px 30px;
   font-size: 15px;
   color: #494949;
 }
@@ -431,14 +471,14 @@ h2 {
   position: relative;
   top: 3px;
 }
-.comment button, .discuss button {
+.comment button, .discuss button, .review button {
   display: block;
   text-align: center;
   width: 100%;
   background: none;
   color: #42bd56;
   font-size: 15px;
-  margin: 15px 0;
+  margin: 10px 0 30px;
 }
 .comment button:focus, .discuss button:focus {
   outline: none;
@@ -461,5 +501,55 @@ h2 {
 .discuss-response-number {
   margin-top: 5px;
   color: #42bd56;
+}
+.review {
+  text-align: left;
+  color: #494949;
+  font-size: 12px;
+}
+.review li {
+  padding: 15px 18px 15px 0;
+}
+.review h3 {
+  font-weight: normal;
+  font-size: 17px;
+}
+.review p {
+  color: #aaaaaa;
+  padding: 7px 0;
+  line-height: 20px;
+}
+.review-useful {
+  color: #aaaaaa;
+}
+.review-star {
+  position: relative;
+  top: 4px;
+  padding-left: 10px;
+}
+.doulist {
+  margin-top: 10px;
+  text-align: left;
+}
+.doulist ul {
+  white-space: nowrap;
+  overflow-x: auto;
+  text-align: center;
+  padding: 5px 15px 43px 15px;
+  font-size: .94rem;
+}
+.doulist li {
+  height: 50px;
+  line-height: 50px;
+  display: inline-block;
+  border: 1px solid #42bd56;
+  color: #42bd56;
+  padding: 0 1.55rem;
+  border-radius: .25rem;
+}
+.doulist li.line {
+  display: block;
+  height: 10px;
+  border: none;
 }
 </style>

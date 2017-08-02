@@ -14,7 +14,7 @@
       <h2 class="recommend-time" v-if="iIndex !== 0">{{i.date}}</h2>
       <div v-for="(item, index) in i.recommend_feeds" class="recommend-item">
         <a :href="item.target.uri">
-          <div v-if="item.target.cover_url !== ''" class="recommend-item-img" :style="{background: imgUrl[iIndex][index].background}">
+          <div v-if="item.target.cover_url !== '' && imgUrl[iIndex][index] !== undefined" class="recommend-item-img" :style="{background: imgUrl[iIndex][index].background}">
             <div></div>
           </div>
           <h1>{{item.title}}</h1>
@@ -35,7 +35,8 @@ export default {
   data () {
     return {
       recommendList: [],
-      timePass: -1
+      timePass: -1,
+      viewImg: 5
     }
   },
   computed: {
@@ -43,13 +44,28 @@ export default {
       return new Date(new Date().getTime() - 1000 * 60 * 60 * 24 * this.timePass).toLocaleDateString().split('/').join('-')
     },
     imgUrl () {
-      return this.recommendList.map((i) => {
+      let imgUrl = this.recommendList.map((i) => {
         return i.recommend_feeds.map((item) => {
           return {
             background: 'url(' + item.target.cover_url + ') center center / cover no-repeat rgb(250, 250, 250)'
           }
         })
       })
+      let showImgUrl = []
+      let total = 0
+      let index = 0
+      while (total < this.viewImg) {
+        showImgUrl.push([])
+        for (let j = 0; j < imgUrl[index].length; j++) {
+          total++
+          showImgUrl[index].push(imgUrl[index][j])
+          if (total >= this.viewImg) {
+            break
+          }
+        }
+        index++
+      }
+      return showImgUrl
     }
   },
   methods: {
@@ -75,6 +91,7 @@ export default {
         let height = window.screen.height // 网页分辨率的高度
         let scrollHeight = document.body.scrollHeight // 网页总高度
         let scrollTop = document.documentElement.scrollTop || document.body.scrollTop // 滚动条的滚过的距离
+        this.viewImg = 5 + Math.ceil(scrollTop / 145)
         if (scrollTop + height + 500 >= scrollHeight) {
           this.timePass++
           this.getRecommentList()
@@ -129,6 +146,7 @@ export default {
 }
 .recommend-item p {
   margin-bottom: 10px;
+  color: #aaa;
 }
 .recommend-item-img {
   float: right;
