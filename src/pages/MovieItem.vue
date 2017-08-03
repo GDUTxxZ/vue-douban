@@ -8,7 +8,7 @@
           <div :style="{background: imgUrl.background}"></div>
           <div>
             <div class="movie-rating">
-              <canvas id="star" width="70" height="18"></canvas>{{movie.rating.average}}<span class="movie-rating-people">{{movie.ratings_count}}人评价</span>
+              <stars id="star" width="70" height="18" :rating="movie.rating.average"></stars>{{movie.rating.average}}<span class="movie-rating-people">{{movie.ratings_count}}人评价</span>
             </div>
             <p>{{movieInfo}}</p>
           </div>
@@ -50,7 +50,7 @@
             <img :src="item.user.avatar">
             <div class="comment-main">
               <div class="user">
-                {{item.user.name}}<canvas class="comment-star" width="70" height="18"></canvas>
+                {{item.user.name}}<stars class="comment-star" width="70" height="18" :rating="item.rating.value * 2"></stars>
               </div>
               <span class="time">{{item.create_time}}</span>
               <p>{{item.comment}}</p>
@@ -80,7 +80,7 @@
         <ul>
           <li v-for="item in review.reviews">
             <h3>{{item.title}}</h3>
-            {{item.user.name}}<canvas class="review-star" width="70" height="18"></canvas>
+            {{item.user.name}}<star class="review-star" width="70" height="18" :rating="item.rating.value * 2"></star>
             <p>{{item.abstract}}</p>
             <span class="review-useful">{{item.useful_count}} 有用</span>
           </li>
@@ -109,6 +109,7 @@
 <script>
 import ajax from '../lib/ajax'
 import banner from '../components/banner'
+import stars from '../components/stars'
 import doubanApp from '../components/doubanApp'
 export default {
   data () {
@@ -126,7 +127,8 @@ export default {
   },
   components: {
     banner,
-    doubanApp
+    doubanApp,
+    stars
   },
   computed: {
     movieInfo () {
@@ -221,79 +223,6 @@ export default {
         console.error(e)
       })
     },
-    paintStar (ctx, x, y, R) {
-      let r = R / 2
-      ctx.beginPath()
-      ctx.moveTo(x, y)
-      for (let j = 0; j < 5; j++) {
-        ctx.lineTo(x + R * Math.cos((j * 72 + 18) * Math.PI / 180), y - R * Math.sin((j * 72 + 18) * Math.PI / 180))
-        ctx.lineTo(x + r * Math.cos((j * 72 + 54) * Math.PI / 180), y - r * Math.sin((j * 72 + 54) * Math.PI / 180))
-      }
-      ctx.lineTo(x + R * Math.cos(18 * Math.PI / 180), y - R * Math.sin(18 * Math.PI / 180))
-      ctx.closePath()
-      ctx.fill()
-    },
-    paintMovieStars () {
-      let rating = this.movie.rating.average
-      let canvas = document.getElementById('star')
-      let ctx = canvas.getContext('2d')
-      ctx.fillStyle = 'rgb(255,183,16)'
-      ctx.strokeStyle = 'rgb(255,183,16)'
-      for (let i = 0; i < 5; i++) {
-        this.paintStar(ctx, 7 + i * 14, 9, 7)
-      }
-      ctx.clearRect(70, 0, -((10 - rating) / 10 * 70), 18)
-      ctx.globalCompositeOperation = 'destination-over'
-      ctx.fillStyle = '#ddd'
-      ctx.strokeStyle = '#ddd'
-      for (let i = 0; i < 5; i++) {
-        this.paintStar(ctx, 7 + i * 14, 9, 7)
-      }
-    },
-    paintCommentStars () {
-      console.log(this.$el)
-      let canvasList = this.$el.getElementsByClassName('comment-star')
-      let commentList = this.comment.interests
-      for (var i = 3; i >= 0; i--) {
-        let rating = commentList[i].rating.value * 2
-        let canvas = canvasList[i]
-        let ctx = canvas.getContext('2d')
-        ctx.fillStyle = 'rgb(255,183,16)'
-        ctx.strokeStyle = 'rgb(255,183,16)'
-        for (let i = 0; i < 5; i++) {
-          this.paintStar(ctx, 7 + i * 14, 9, 7)
-        }
-        ctx.clearRect(70, 0, -((10 - rating) / 10 * 70), 18)
-        ctx.globalCompositeOperation = 'destination-over'
-        ctx.fillStyle = '#ddd'
-        ctx.strokeStyle = '#ddd'
-        for (let i = 0; i < 5; i++) {
-          this.paintStar(ctx, 7 + i * 14, 9, 7)
-        }
-      }
-    },
-    paintReviewStars () {
-      console.log(this.$el)
-      let canvasList = this.$el.getElementsByClassName('review-star')
-      let commentList = this.review.reviews
-      for (var i = 4; i >= 0; i--) {
-        let rating = commentList[i].rating.value * 2
-        let canvas = canvasList[i]
-        let ctx = canvas.getContext('2d')
-        ctx.fillStyle = 'rgb(255,183,16)'
-        ctx.strokeStyle = 'rgb(255,183,16)'
-        for (let i = 0; i < 5; i++) {
-          this.paintStar(ctx, 7 + i * 14, 9, 7)
-        }
-        ctx.clearRect(70, 0, -((10 - rating) / 10 * 70), 18)
-        ctx.globalCompositeOperation = 'destination-over'
-        ctx.fillStyle = '#ddd'
-        ctx.strokeStyle = '#ddd'
-        for (let i = 0; i < 5; i++) {
-          this.paintStar(ctx, 7 + i * 14, 9, 7)
-        }
-      }
-    },
     expand () {
       this.isExpand = true
     }
@@ -302,11 +231,6 @@ export default {
     // 组件创建完后获取数据，
     // 此时 data 已经被 observed 了
     this.fetchData()
-  },
-  updated () {
-    this.paintMovieStars()
-    this.paintCommentStars()
-    this.paintReviewStars()
   }
 }
 </script>
@@ -322,9 +246,10 @@ h2 {
 }
 .main {
   margin: 0 18px;
-}
-.movie {
   text-align: left;
+}
+.main>div {
+  margin: 35px 0;
 }
 .movie h1 {
   margin: 30px 0 5px;
@@ -375,7 +300,6 @@ h2 {
   color: #ffb712;
 }
 .summary {
-  text-align: left;
   font-size: 15px;
   color: #494949;
 }
@@ -389,6 +313,7 @@ h2 {
 }
 .participants li {
   display: inline-block;
+  text-align: center;
   padding-right: 10px;
   width: 75px;
 }
@@ -404,10 +329,6 @@ h2 {
   white-space: nowrap;
   overflow-x: hidden;
 }
-.tags {
-  margin: 15px 18px;
-  text-align: left;
-}
 .tags li{
   display: inline-block;
   background: #eee;
@@ -417,9 +338,6 @@ h2 {
   font-size: 15px;
   line-height: 28px;
   margin-right: 10px;
-}
-.comment {
-  text-align: left;
 }
 .comment li {
   clear: left;
@@ -483,9 +401,6 @@ h2 {
 .comment button:focus, .discuss button:focus {
   outline: none;
 }
-.discuss {
-  text-align: left;
-}
 .discuss li {
   border-bottom: 1px solid #eeeeee;
   padding: 15px 18px 15px 0;
@@ -503,7 +418,6 @@ h2 {
   color: #42bd56;
 }
 .review {
-  text-align: left;
   color: #494949;
   font-size: 12px;
 }
@@ -529,7 +443,6 @@ h2 {
 }
 .doulist {
   margin-top: 10px;
-  text-align: left;
 }
 .doulist ul {
   white-space: nowrap;

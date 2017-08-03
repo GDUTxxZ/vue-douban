@@ -15,7 +15,7 @@
             <span>暂无评分</span>
           </div>
           <div v-else class="scroller-movie-rating">
-            <canvas class="scroller-movie-star" width="55" height="15"></canvas>
+            <stars class="scroller-movie-star" width="55" height="15" :rating="scrollData[index - 1].rating.average || scrollData[index - 1].rating.value"></stars>
             <span>{{scrollData[index - 1].rating.average || scrollData[index - 1].rating.value}}</span>
           </div>
         </router-link>
@@ -25,68 +25,28 @@
 </template>
 
 <script>
+import stars from '../components/stars'
 export default {
   props: ['scrollTitle', 'scrollHref', 'scrollData'],
+  components: {
+    stars
+  },
   computed: {
     imgUrl () {
       if (this.scrollData[0].cover !== undefined) {
         return this.scrollData.map((item) => {
           return {
-            background: 'url(' + item.cover.url + ')'
+            background: 'url(' + item.cover.url + ') center center / cover no-repeat rgb(250, 250, 250)'
           }
         })
       } else {
         return this.scrollData.map((item) => {
           return {
-            background: 'url(' + item.images.medium + ')'
+            background: 'url(' + item.images.medium + ') center center / cover no-repeat rgb(250, 250, 250)'
           }
         })
       }
     }
-  },
-  methods: {
-    paintStars () {
-      console.log('paintStars')
-      function star (ctx, x, y, R) {
-        let r = R * 4 / 7
-        ctx.beginPath()
-        ctx.moveTo(x, y)
-        for (let j = 0; j < 5; j++) {
-          ctx.lineTo(x + R * Math.cos((j * 72 + 18) * Math.PI / 180), y - R * Math.sin((j * 72 + 18) * Math.PI / 180))
-          ctx.lineTo(x + r * Math.cos((j * 72 + 54) * Math.PI / 180), y - r * Math.sin((j * 72 + 54) * Math.PI / 180))
-        }
-        ctx.lineTo(x + R * Math.cos(18 * Math.PI / 180), y - R * Math.sin(18 * Math.PI / 180))
-        ctx.closePath()
-        ctx.fill()
-      }
-      var canvasList = this.$el.getElementsByClassName('scroller-movie-star')
-      for (let canvasId = 0, i = 0; canvasId < 8; canvasId++) {
-        let rating = this.scrollData[canvasId].rating.average || this.scrollData[canvasId].rating.value
-        if (rating === undefined) {
-          continue
-        }
-        let canvas = canvasList[i++]
-        var ctx = canvas.getContext('2d')
-        ctx.fillStyle = 'rgb(255,172,45)'
-        ctx.strokeStyle = 'rgb(255,172,45)'
-        for (let i = 0; i < 5; i++) {
-          star(ctx, 5.5 + i * 11, 7.5, 5)
-        }
-        ctx.clearRect(54.5, 2.5, -((10 - rating) / 10 * 54), 10)
-        ctx.globalCompositeOperation = 'destination-over'
-        ctx.fillStyle = '#aaa'
-        ctx.strokeStyle = '#aaa'
-        for (let i = 0; i < 5; i++) {
-          star(ctx, 5.5 + i * 11, 7.5, 5)
-        }
-      }
-    }
-  },
-  updated () {
-    console.log(this)
-  },
-  mounted () {
-    this.paintStars()
   }
 }
 </script>
@@ -122,7 +82,7 @@ export default {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  margin-left: 1.12rem;
+  margin-right: 1.12rem;
   width: 100px;
 }
 .scroller-movie-item a {

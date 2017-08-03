@@ -11,6 +11,8 @@ var express = require('express')
 var webpack = require('webpack')
 var proxyMiddleware = require('http-proxy-middleware')
 var webpackConfig = require('./webpack.dev.conf')
+var request = require('request')
+var url = require('url')
 
 // default port where dev server listens for incoming traffic
 var port = process.env.PORT || config.dev.port
@@ -54,6 +56,30 @@ app.get('/fake', (req, res) => { // 转发请求
       console.log(err);
     })  
   })
+})
+app.get('/pic', (req, res) => {
+  let query = req.query
+  console.log(query)
+  let parsedUrl = url.parse(query.url)
+  let referer = parsedUrl.protocol + '//' + parsedUrl.host
+  let options = {
+    uri: query.url,
+    headers: {
+      'Referer': referer
+    }
+  }
+  function callback(error, response, body) {
+    if (!error && response.statusCode === 200) {
+      console.log("type " + response.headers['content-type']);
+    }
+    res.end(response.body);
+  }
+  // request(options, callback);
+  request(options)
+    .on('error', function(err) {
+        console.log(err)
+    })
+    .pipe(res);
 })
 //----------------华丽的分割线------------------------
 
