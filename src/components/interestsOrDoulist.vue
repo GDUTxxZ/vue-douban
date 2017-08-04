@@ -1,54 +1,75 @@
 <template>
-  <div class="interests">
+  <div :class="classObj">
     <h1>{{title}}</h1>
     <ul>
-      <li v-for="item in interestsData[0]">{{item}}</li>
+      <li v-for="item in propsData[0]">{{item}}</li>
       <li class="line"></li>
-      <li v-for="item in interestsData[1]">{{item}}</li>
+      <li v-for="item in propsData[1]">{{item}}</li>
     </ul>
   </div>
 </template>
 
 <script>
 export default {
-  props: ['title', 'interestsData']
+  props: ['title', 'propsData', 'type'],
+  computed: {
+    classObj () {
+      if (this.type === 'doulist') {
+        return {
+          advise: true
+        }
+      } else if (this.type === 'interests') {
+        return {
+          interests: true,
+          advise: true
+        }
+      }
+    }
+  }
 }
 </script>
 
 <style>
-.interests {
+.advise {
   margin-top: 10px;
   text-align: left;
 }
-.interests h1 {
-  font-size: 1.06rem;
+.advise h1 {
+  font-size: 15px;
   display: inline;
   font-weight: normal;
-  padding: 0 1.12rem;
+  color: #aaa;
 }
-.interests ul {
+.interests h1 {
+  padding: 0 1.12rem;
+  font-size: 1.06rem;
+  color: #111;
+}
+.advise ul {
   white-space: nowrap;
   overflow-x: auto;
-  text-align: center;
   padding: 15px 15px 43px 15px;
 }
-.interests li {
+.advise li {
+  text-align: center;
   height: 50px;
   line-height: 50px;
   display: inline-block;
-  border: 1px solid;
+  border: 1px solid #42bd56;
   padding: 0 1.55rem;
   margin: 0 .2rem;
+  font-size: .94rem;
   border-radius: .25rem;
+  color: #42bd56;
 }
-.interests li.line {
+.advise li.line {
   display: block;
   height: 10px;
   border: none;
 }
 .interests li:nth-child(1), .interests li:nth-child(6) {
   color: #42BD56;
-  border-color: #42BD56;
+  border-color: blue;
 }
 .interests li:nth-child(2), .interests li:nth-child(8) {
   color: #FFC46C;

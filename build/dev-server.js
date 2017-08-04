@@ -49,7 +49,8 @@ app.get('/fake', (req, res) => { // 转发请求
       recommend += chunk;
     });
     response.on('end', function() {
-      res.write(recommend)
+      res.writeHead(200, {'Content-Type': 'text/plain;charset=utf-8'})
+      res.write(recommend, 'utf-8')
       res.send()
     });
     response.on('error', (err) => {

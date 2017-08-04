@@ -1,50 +1,54 @@
 <template>
   <div>
-    <banner title="关注影评人"></banner>
+    <banner title="更多文学好书推荐导读"></banner>
     <div class="main">
-      <div class="movie">
-        <h1>{{movie.title}}</h1>
-        <div class="movie-info">
+      <div class="book">
+        <h1>{{book.title}}</h1>
+        <div class="book-info">
           <div :style="{background: imgUrl.background}"></div>
           <div>
-            <div class="movie-rating">
-              <stars id="star" width="70" height="18" :rating="movie.rating.average"></stars>{{movie.rating.average}}<span class="movie-rating-people">{{movie.ratings_count}}人评价</span>
+            <div class="book-rating">
+              <stars id="star" width="70" height="18" :rating="book.rating.average"></stars>{{book.rating.average}}<span class="book-rating-people">{{book.ratings_count}}人评价</span>
             </div>
-            <p>{{movieInfo}}</p>
+            <p>{{bookInfo}}</p>
           </div>
-          <a href="https://www.douban.com/doubanapp/app?model=B&copy=1&page=&channel=m_ad_yingren&direct_dl=1">用App查看影人资料</a>
+          <div>
+            <a href="https://www.douban.com/doubanapp/app?model=B&copy=1&page=&channel=m_ad_yingren&direct_dl=1">用App查看影人资料</a>
+            <span>当当网 xx元起</span>
+          </div>
         </div>
       </div>
       <div class="mark-button">
-        <button>想看</button>
-        <button>看过</button>
+        <button>想读</button>
+        <button>在读</button>
+        <button>读过</button>
       </div>
       <div class="summary">
-        <h2>{{movie.title}}的剧情简介</h2>
-        <p>{{isExpand?movie.summary:shortSummary}}<span v-if="!isExpand" @click="expand">(展开)</span> </p>
+        <h2>{{book.title}}的剧情简介</h2>
+        <p>{{isExpand?book.summary:shortSummary}}<span v-if="!isExpand" @click="expand">(展开)</span> </p>
       </div>
-      <div class="participants">
+<!--       <div class="participants">
         <h2>影人</h2>
         <ul>
-          <li v-for="item in movie.directors">
+          <li v-for="item in book.directors">
             <img :src="item.avatars.small">
             <span class="participants-name">{{item.name}}</span>
             <span class="participants-part">导演</span>
-          </li><li v-for="item in movie.casts">
+          </li><li v-for="item in book.casts">
             <img :src="item.avatars.small">
             <span class="participants-name">{{item.name}}</span>
             <span class="participants-part">演员</span>
           </li>
         </ul>
-      </div>
-      <div class="tags">
+      </div> -->
+<!--       <div class="tags">
         <h2>查看更多豆瓣高分电影电视剧</h2>
         <ul>
           <li v-for="item in tags">{{item}}</li>
         </ul>
-      </div>
-      <div class="comment">
-        <h2>{{movie.title}}的短评({{comment.total}})</h2>
+      </div> -->
+<!--       <div class="comment">
+        <h2>{{book.title}}的短评({{comment.total}})</h2>
         <ul>
           <li v-for="item in comment.interests">
             <img :src="item.user.avatar">
@@ -64,8 +68,8 @@
           </li>
         </ul>
         <button>查看全部短评</button>
-      </div>
-      <div class="discuss">
+      </div> -->
+<!--       <div class="discuss">
         <h2>讨论({{discuss.total}})</h2>
         <ul>
           <li v-for="item in discuss.forum_topics">
@@ -74,9 +78,9 @@
           </li>
         </ul>
         <button>查看全部讨论</button>
-      </div>
-      <div class="review">
-        <h2>{{movie.title}}的影评({{review.total}})</h2>
+      </div> -->
+<!--       <div class="review">
+        <h2>{{book.title}}的影评({{review.total}})</h2>
         <ul>
           <li v-for="item in review.reviews">
             <h3>{{item.title}}</h3>
@@ -86,8 +90,21 @@
           </li>
         </ul>
         <button>查看全部影评</button>
+      </div> -->
+      <div class="doulist">
+        <h2>推荐{{book.title}}的豆列</h2>
+        <ul>
+          <li>正在上映</li>
+          <li>想看的电影太多怕忘了</li>
+          <li>豆瓣电影【口碑榜】2017-04-27更新</li>
+          <li>ღ♩♪生活有这些期待很有动力♫♬ღ</li>
+          <li class="line"></li>
+          <li>【中国内地电影票房总排行】</li>
+          <li>影视，良心制作大杂烩</li>
+          <li>那些超五星的电影</li>
+          <li>日常～那些杂七杂八的</li>
+        </ul>
       </div>
-      <interestsOrDoulist :title="'推荐' + movie.title + '的豆列'" :propsData="doulistData" type="doulist"></interestsOrDoulist>
     </div>
     <doubanApp></doubanApp>
   </div>
@@ -97,12 +114,11 @@
 import ajax from '../lib/ajax'
 import banner from '../components/banner'
 import stars from '../components/stars'
-import interestsOrDoulist from '../components/interestsOrDoulist'
 import doubanApp from '../components/doubanApp'
 export default {
   data () {
     return {
-      movie: {},
+      book: {},
       comment: {},
       discuss: {},
       review: {},
@@ -110,31 +126,29 @@ export default {
       isGetComment: false,
       isGetDiscuss: false,
       isGetReview: false,
-      isExpand: false,
-      doulistData: [['正在上映', '想看的电影太多怕忘了', '豆瓣电影【口碑榜】2017-04-27更新', 'ღ♩♪生活有这些期待很有动力♫♬ღ'], ['【中国内地电影票房总排行】', '影视，良心制作大杂烩', '那些超五星的电影', '日常～那些杂七杂八的']]
+      isExpand: false
     }
   },
   components: {
     banner,
     doubanApp,
-    stars,
-    interestsOrDoulist
+    stars
   },
   computed: {
-    movieInfo () {
-      let movieInfo = [].concat(this.movie.genres, this.movie.directors.map(i => i.name + '(导演)'), this.movie.casts.map(i => i.name), this.movie.year + '(' + this.movie.countries + ')上映')
-      return movieInfo.join(' / ')
+    bookInfo () {
+      let bookInfo = [].concat(this.book.author, this.book.translator, this.book.publisher, this.book.pages + '页', this.book.binding, this.book.price, this.book.pubdate)
+      return bookInfo.join(' / ')
     },
     imgUrl () {
       return {
-        background: 'url(' + this.movie.images.medium + ')'
+        background: 'url(' + this.book.images.medium + ')'
       }
     },
     shortSummary () {
-      return this.movie.summary.slice(0, 75) + '...'
+      return this.book.summary.slice(0, 75) + '...'
     },
     tags () {
-      return [].concat(this.movie.countries, this.movie.genres)
+      return [].concat(this.book.countries, this.book.genres)
     },
     loading () {
       return this.isGetComment && this.isGetMovieInfo && this.isGetDiscuss && this.isGetReview
@@ -150,13 +164,13 @@ export default {
         url: '/fake',
         method: 'GET',
         query: {
-          url: 'https://api.douban.com/v2/movie/subject/' + this.$route.params.movieId
+          url: 'https://api.douban.com/v2/book/' + this.$route.params.bookId
         }
       }).then((value) => {
-        console.log('get movieInfo')
+        console.log('get bookInfo')
         this.isGetMovieInfo = true
-        this.movie = JSON.parse(value)
-        console.log(this.movie)
+        this.book = JSON.parse(value)
+        console.log(this.book)
       }, (e) => {
         console.error(e)
       })
@@ -164,7 +178,7 @@ export default {
         url: '/fake',
         method: 'GET',
         query: {
-          url: 'https://m.douban.com/rexxar/api/v2/movie/' + this.$route.params.movieId + '/interests',
+          url: 'https://m.douban.com/rexxar/api/v2/book/' + this.$route.params.bookId + '/interests',
           count: 4,
           order_by: 'hot',
           start: 0,
@@ -182,7 +196,7 @@ export default {
         url: '/fake',
         method: 'GET',
         query: {
-          url: 'https://m.douban.com/rexxar/api/v2/movie/' + this.$route.params.movieId + '/forum_topics',
+          url: 'https://m.douban.com/rexxar/api/v2/book/' + this.$route.params.bookId + '/forum_topics',
           count: 5,
           start: 0,
           for_mobile: 1
@@ -199,7 +213,7 @@ export default {
         url: '/fake',
         method: 'GET',
         query: {
-          url: 'https://m.douban.com/rexxar/api/v2/movie/' + this.$route.params.movieId + '/reviews',
+          url: 'https://m.douban.com/rexxar/api/v2/book/' + this.$route.params.bookId + '/annotations',
           count: 5,
           start: 0,
           for_mobile: 1
@@ -239,56 +253,67 @@ h2 {
   text-align: left;
 }
 .main>div {
-  margin: 35px 0;
+  margin: 30px 0;
 }
-.movie h1 {
+.book h1 {
   margin: 30px 0 5px;
   font-size: 24px;
   line-height: 32px;
   font-weight: normal;
 }
-.movie-info>div:nth-child(1) {
+.book-info>div:nth-child(1) {
   float: right;
   width: 100px;
   height: 150px;
+  margin-bottom: 15px;
 }
 #star {
   position: relative;
   top: 3px;
   margin-right: 10px;
 }
-.movie-rating {
+.book-rating {
   font-size: 15px;
   position: relative;
   bottom: 3px;
 }
-.movie-rating-people {
+.book-rating-people {
   color: #aaa;
   padding-left: 10px;
 }
-.movie-info p {
+.book-info p {
   font-size: 14px;
   margin: 15px 120px 0 0;
   color: #494949;
 }
-.movie-info a {
-  font-size: 14px;
-  display: block;
-  padding-top: 10px;
+.book-info>div:nth-last-child(1) {
   clear: right;
+  border-top: 1px solid #eaeaea;
+  border-bottom: 1px solid #eaeaea;
+  padding: 13px 0;
+  font-size: 15px;
+}
+.book-info>div:nth-last-child(1) span {
+  font-size: 14px;
+  color: #ccc;
+  float: right;
 }
 .mark-button button {
   border: 1px solid #ffb712;
   background: none;
   height: 30px;
   line-height: 30px;
+  font-size: 15px;
   border-radius: 5px;
-  width: 45%;
+  margin-right: 5px;
+  width: 31%;
   color: #ffb712;
 }
 .summary {
   font-size: 15px;
   color: #494949;
+  white-space: pre-line;
+  line-height: 25px;
 }
 .summary p span {
   color: #42bd56;;
@@ -427,5 +452,29 @@ h2 {
   position: relative;
   top: 4px;
   padding-left: 10px;
+}
+.doulist {
+  margin-top: 10px;
+}
+.doulist ul {
+  white-space: nowrap;
+  overflow-x: auto;
+  text-align: center;
+  padding: 5px 15px 43px 15px;
+  font-size: .94rem;
+}
+.doulist li {
+  height: 50px;
+  line-height: 50px;
+  display: inline-block;
+  border: 1px solid #42bd56;
+  color: #42bd56;
+  padding: 0 1.55rem;
+  border-radius: .25rem;
+}
+.doulist li.line {
+  display: block;
+  height: 10px;
+  border: none;
 }
 </style>

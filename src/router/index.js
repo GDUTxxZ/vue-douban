@@ -7,6 +7,7 @@ import Group from '@/pages/Group'
 import Movie from '@/pages/Movie'
 import Search from '@/pages/Search'
 import movieItem from '@/pages/movieItem'
+import bookItem from '@/pages/bookItem'
 Vue.use(Router)
 
 export default new Router({
@@ -40,6 +41,11 @@ export default new Router({
       path: '/book',
       name: 'Book',
       component: Book
+    },
+    {
+      path: '/book/:bookId',
+      name: 'bookItem',
+      component: bookItem
     },
     {
       path: '/search',

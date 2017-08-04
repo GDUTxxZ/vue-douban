@@ -2,11 +2,11 @@
   <div>
     <div v-if="movie.movieInTheaters === null || movie.movieFree === null || movie.movieLast === null">加载中</div>
     <div v-else>
-      <scroller scrollTitle="影院热映" scrollHref="/movie" :scrollData="movie.movieInTheaters.subjects"></scroller>
-      <scroller scrollTitle="免费在线观影" scrollHref="/movie" :scrollData="movie.movieFree.subject_collection_items"></scroller>
-      <scroller scrollTitle="新片速递" scrollHref="/movie" :scrollData="movie.movieLast.subject_collection_items"></scroller>
+      <scroller scrollTitle="影院热映" scrollHref="/movie" :scrollData="movie.movieInTheaters.subjects" scrollerType="movie"></scroller>
+      <scroller scrollTitle="免费在线观影" scrollHref="/movie" :scrollData="movie.movieFree.subject_collection_items" scrollerType="movie"></scroller>
+      <scroller scrollTitle="新片速递" scrollHref="/movie" :scrollData="movie.movieLast.subject_collection_items" scrollerType="movie"></scroller>
     </div>
-    <interests title="发现好电影" :interestsData="interestsData"></interests>
+    <interestsOrDoulist title="发现好电影" :propsData="interestsData" type="interests"></interestsOrDoulist>
     <types :typesData="typesData"></types>
     <doubanApp></doubanApp>
   </div>
@@ -15,7 +15,7 @@
 <script>
 import scroller from '../components/scroller'
 import doubanApp from '../components/doubanApp'
-import interests from '../components/interests'
+import interestsOrDoulist from '../components/interestsOrDoulist'
 import types from '../components/types'
 import { mapState } from 'vuex'
 export default {
@@ -28,7 +28,7 @@ export default {
   components: {
     scroller,
     doubanApp,
-    interests,
+    interestsOrDoulist,
     types
   },
   computed: mapState([

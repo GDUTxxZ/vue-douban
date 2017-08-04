@@ -4,18 +4,18 @@
       <h1>{{scrollTitle}}</h1>
       <router-link :to="scrollHref">更多</router-link>
     </div>
-    <ul class="scroller-movie-list">
-      <li class="scroller-movie-item" v-for="index in 8">
-        <router-link :to="'/movie/' + scrollData[index - 1].id">
-          <div class="scroller-movie-img" :style="{background: imgUrl[index - 1].background}">
+    <ul class="scroller-type-list">
+      <li class="scroller-type-item" v-for="index in 8">
+        <router-link :to="'/' + scrollerType + '/' + scrollData[index - 1].id">
+          <div class="scroller-type-img" :style="{background: imgUrl[index - 1].background}">
             <div></div>
           </div>
           <span>{{scrollData[index - 1].title}}</span>
-          <div v-if="scrollData[index - 1].rating.average === 0 || scrollData[index - 1].rating.value === 0" class="scroller-movie-rating">
+          <div v-if="scrollData[index - 1].rating.average === 0 || scrollData[index - 1].rating.value === 0" class="scroller-type-rating">
             <span>暂无评分</span>
           </div>
-          <div v-else class="scroller-movie-rating">
-            <stars class="scroller-movie-star" width="55" height="15" :rating="scrollData[index - 1].rating.average || scrollData[index - 1].rating.value"></stars>
+          <div v-else class="scroller-type-rating">
+            <stars class="scroller-type-star" width="55" height="15" :rating="scrollData[index - 1].rating.average || scrollData[index - 1].rating.value"></stars>
             <span>{{scrollData[index - 1].rating.average || scrollData[index - 1].rating.value}}</span>
           </div>
         </router-link>
@@ -27,7 +27,7 @@
 <script>
 import stars from '../components/stars'
 export default {
-  props: ['scrollTitle', 'scrollHref', 'scrollData'],
+  props: ['scrollTitle', 'scrollHref', 'scrollData', 'scrollerType'],
   components: {
     stars
   },
@@ -72,34 +72,34 @@ export default {
   font-size: .9rem;
   color: #42bd56;
 }
-.scroller-movie-list {
+.scroller-type-list {
   overflow-x: auto;
   white-space: nowrap;
 }
-.scroller-movie-item {
+.scroller-type-item {
   display: inline-block;
   word-wrap: normal;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  margin-right: 1.12rem;
+  margin-right: .7rem;
   width: 100px;
 }
-.scroller-movie-item a {
+.scroller-type-item a {
   color: #111;
 }
-.scroller-movie-img {
+.scroller-type-img {
   width: 100%;
   overflow: hidden;
 }
-.scroller-movie-img div {
+.scroller-type-img div {
   margin-top: 142.85714%;
 }
-.scroller-movie-rating {
+.scroller-type-rating {
   font-size: .72rem;
   color: #aaa;
 }
-.scroller-movie-star {
+.scroller-type-star {
   position: relative;
   top: 2.7px;
 }

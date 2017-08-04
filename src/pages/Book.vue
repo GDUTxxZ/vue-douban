@@ -2,8 +2,8 @@
   <div>
     <div v-if="book.bookNonfiction === null || book.bookFiction === null || book.bookMarket === null">加载中</div>
     <div v-else>
-      <scroller scrollTitle="最受关注图书|虚构类" scrollHref="/book" :scrollData="book.bookFiction.subject_collection_items"></scroller>
-      <scroller scrollTitle="最受关注图书|非虚构类" scrollHref="/book" :scrollData="book.bookNonfiction.subject_collection_items"></scroller>
+      <scroller scrollTitle="最受关注图书|虚构类" scrollHref="/book" :scrollData="book.bookFiction.subject_collection_items" scrollerType="book"></scroller>
+      <scroller scrollTitle="最受关注图书|非虚构类" scrollHref="/book" :scrollData="book.bookNonfiction.subject_collection_items" scrollerType="book"></scroller>
       <div class="market-book">
         <div class="market-title">
           <h1>豆瓣书店</h1>
@@ -36,7 +36,7 @@
         </ul>
       </div>
     </div>
-    <interests title="发现好图书" :interestsData="interestsData"></interests>
+    <interestsOrDoulist title="发现好图书" :propsData="interestsData" type="interests"></interestsOrDoulist>
     <types :typesData="typesData"></types>
     <doubanApp></doubanApp>
   </div>
@@ -45,7 +45,7 @@
 <script>
 import scroller from '../components/scroller'
 import doubanApp from '../components/doubanApp'
-import interests from '../components/interests'
+import interestsOrDoulist from '../components/interestsOrDoulist'
 import types from '../components/types'
 import { mapState } from 'vuex'
 export default {
@@ -58,7 +58,7 @@ export default {
   components: {
     scroller,
     doubanApp,
-    interests,
+    interestsOrDoulist,
     types
   },
   computed: {
