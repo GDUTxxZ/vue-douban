@@ -1,6 +1,6 @@
 <template>
   <div>
-    <banner title="关注影评人"></banner>
+    <banner :title="['用App打开', '关注影评人']"></banner>
     <div class="main">
       <div class="movie">
         <h1>{{movie.title}}</h1>
@@ -19,10 +19,7 @@
         <button>想看</button>
         <button>看过</button>
       </div>
-      <div class="summary">
-        <h2>{{movie.title}}的剧情简介</h2>
-        <p>{{isExpand?movie.summary:shortSummary}}<span v-if="!isExpand" @click="expand">(展开)</span> </p>
-      </div>
+      <Summary :title="movie.title + '的剧情简介'" :summary="movie.summary"></Summary>
       <div class="participants">
         <h2>影人</h2>
         <ul>
@@ -43,50 +40,9 @@
           <li v-for="item in tags">{{item}}</li>
         </ul>
       </div>
-      <div class="comment">
-        <h2>{{movie.title}}的短评({{comment.total}})</h2>
-        <ul>
-          <li v-for="item in comment.interests">
-            <img :src="item.user.avatar">
-            <div class="comment-main">
-              <div class="user">
-                {{item.user.name}}<stars class="comment-star" width="70" height="18" :rating="item.rating.value * 2"></stars>
-              </div>
-              <span class="time">{{item.create_time}}</span>
-              <p>{{item.comment}}</p>
-              <div class="vote-btn">
-                <div class="vote-btn-right"></div>
-                <div class="vote-btn-left">
-                  <span></span>{{item.vote_count}}
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-        <button>查看全部短评</button>
-      </div>
-      <div class="discuss">
-        <h2>讨论({{discuss.total}})</h2>
-        <ul>
-          <li v-for="item in discuss.forum_topics">
-            <div class="discuss-item-title">{{item.title}}</div>
-            <div class="discuss-response-number">{{item.comments_count}}人回应</div>
-          </li>
-        </ul>
-        <button>查看全部讨论</button>
-      </div>
-      <div class="review">
-        <h2>{{movie.title}}的影评({{review.total}})</h2>
-        <ul>
-          <li v-for="item in review.reviews">
-            <h3>{{item.title}}</h3>
-            {{item.user.name}}<star class="review-star" width="70" height="18" :rating="item.rating.value * 2"></star>
-            <p>{{item.abstract}}</p>
-            <span class="review-useful">{{item.useful_count}} 有用</span>
-          </li>
-        </ul>
-        <button>查看全部影评</button>
-      </div>
+      <comment :title="movie.title" type="movie" :id="$route.params.movieId"></comment>
+      <discuss type="movie" :id="$route.params.movieId"></discuss>
+      <review :title="movie.title" type="movie" :id="$route.params.movieId"></review>
       <interestsOrDoulist :title="'推荐' + movie.title + '的豆列'" :propsData="doulistData" type="doulist"></interestsOrDoulist>
     </div>
     <doubanApp></doubanApp>
@@ -97,20 +53,17 @@
 import ajax from '../lib/ajax'
 import banner from '../components/banner'
 import stars from '../components/stars'
+import Summary from '../components/summary'
 import interestsOrDoulist from '../components/interestsOrDoulist'
 import doubanApp from '../components/doubanApp'
+import comment from '../components/comment'
+import discuss from '../components/discuss'
+import review from '../components/review'
 export default {
   data () {
     return {
       movie: {},
-      comment: {},
-      discuss: {},
-      review: {},
       isGetMovieInfo: false,
-      isGetComment: false,
-      isGetDiscuss: false,
-      isGetReview: false,
-      isExpand: false,
       doulistData: [['正在上映', '想看的电影太多怕忘了', '豆瓣电影【口碑榜】2017-04-27更新', 'ღ♩♪生活有这些期待很有动力♫♬ღ'], ['【中国内地电影票房总排行】', '影视，良心制作大杂烩', '那些超五星的电影', '日常～那些杂七杂八的']]
     }
   },
@@ -118,7 +71,11 @@ export default {
     banner,
     doubanApp,
     stars,
-    interestsOrDoulist
+    Summary,
+    interestsOrDoulist,
+    comment,
+    discuss,
+    review
   },
   computed: {
     movieInfo () {
@@ -130,14 +87,11 @@ export default {
         background: 'url(' + this.movie.images.medium + ')'
       }
     },
-    shortSummary () {
-      return this.movie.summary.slice(0, 75) + '...'
-    },
     tags () {
       return [].concat(this.movie.countries, this.movie.genres)
     },
     loading () {
-      return this.isGetComment && this.isGetMovieInfo && this.isGetDiscuss && this.isGetReview
+      return this.isGetMovieInfo
     }
   },
   watch: {
@@ -160,61 +114,6 @@ export default {
       }, (e) => {
         console.error(e)
       })
-      ajax({
-        url: '/fake',
-        method: 'GET',
-        query: {
-          url: 'https://m.douban.com/rexxar/api/v2/movie/' + this.$route.params.movieId + '/interests',
-          count: 4,
-          order_by: 'hot',
-          start: 0,
-          for_mobile: 1
-        }
-      }).then((value) => {
-        console.log('get comment')
-        this.isGetComment = true
-        this.comment = JSON.parse(value)
-        console.log(this.comment)
-      }, (e) => {
-        console.error(e)
-      })
-      ajax({
-        url: '/fake',
-        method: 'GET',
-        query: {
-          url: 'https://m.douban.com/rexxar/api/v2/movie/' + this.$route.params.movieId + '/forum_topics',
-          count: 5,
-          start: 0,
-          for_mobile: 1
-        }
-      }).then((value) => {
-        console.log('get discuss')
-        this.isGetDiscuss = true
-        this.discuss = JSON.parse(value)
-        console.log(this.discuss)
-      }, (e) => {
-        console.error(e)
-      })
-      ajax({
-        url: '/fake',
-        method: 'GET',
-        query: {
-          url: 'https://m.douban.com/rexxar/api/v2/movie/' + this.$route.params.movieId + '/reviews',
-          count: 5,
-          start: 0,
-          for_mobile: 1
-        }
-      }).then((value) => {
-        console.log('get review')
-        this.isGetReview = true
-        this.review = JSON.parse(value)
-        console.log(this.review)
-      }, (e) => {
-        console.error(e)
-      })
-    },
-    expand () {
-      this.isExpand = true
     }
   },
   created () {
@@ -286,14 +185,6 @@ h2 {
   width: 45%;
   color: #ffb712;
 }
-.summary {
-  font-size: 15px;
-  color: #494949;
-}
-.summary p span {
-  color: #42bd56;;
-  float: right;
-}
 .participants {
   white-space: nowrap;
   overflow-x: auto;
@@ -324,108 +215,6 @@ h2 {
   color: #494949;
   font-size: 15px;
   line-height: 28px;
-  margin-right: 10px;
-}
-.comment li {
-  clear: left;
-  margin-bottom: 30px;
-}
-.comment img {
-  float: left;
-  display: block;
-  width: 36px;
-  border-radius: 18px;
-}
-.comment-main {
-  margin-left: 45px;
-  font-size: 15px;
-}
-.comment-star {
-  position: relative;
-  top: 3px;
-  margin-left: 10px;
-}
-.comment-main span {
-  line-height: 25px;
-  font-size: 12px;
-  color: #aaa;
-}
-.comment-main p {
-  margin: 3px 0;
-  color: #494949;
-}
-.vote-btn-left {
-  color: #ccc;
-  font-size: 14px;
-  margin: 10px 0;
-}
-.vote-btn-left span {
-  background: url('https://img3.doubanio.com/f/talion/7a0756b3b6e67b59ea88653bc0cfa14f61ff219d/pics/card/ic_like_gray.svg');
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  position: relative;
-  top: 5px;
-}
-.vote-btn-right {
-  float: right;
-  background: url('https://img3.doubanio.com/f/talion/be268c0a1adb577c8dfdcfbe48c818af3983ed62/pics/card/more.svg') center;
-  background-repeat: no-repeat;
-  width: 20px;
-  height: 20px;
-  position: relative;
-  top: 3px;
-}
-.comment button, .discuss button, .review button {
-  display: block;
-  text-align: center;
-  width: 100%;
-  background: none;
-  color: #42bd56;
-  font-size: 15px;
-  margin: 10px 0 30px;
-}
-.comment button:focus, .discuss button:focus {
-  outline: none;
-}
-.discuss li {
-  border-bottom: 1px solid #eeeeee;
-  padding: 15px 18px 15px 0;
-}
-.discuss li:nth-last-child(1) {
-  border-bottom: none;
-}
-.discuss-item-title {
-  font-size: 17px;
-  color: #494949;
-  font-weight: 500;
-}
-.discuss-response-number {
-  margin-top: 5px;
-  color: #42bd56;
-}
-.review {
-  color: #494949;
-  font-size: 12px;
-}
-.review li {
-  padding: 15px 18px 15px 0;
-}
-.review h3 {
-  font-weight: normal;
-  font-size: 17px;
-}
-.review p {
-  color: #aaaaaa;
-  padding: 7px 0;
-  line-height: 20px;
-}
-.review-useful {
-  color: #aaaaaa;
-}
-.review-star {
-  position: relative;
-  top: 4px;
-  padding-left: 10px;
+  margin: 0 10px 10px 0;
 }
 </style>

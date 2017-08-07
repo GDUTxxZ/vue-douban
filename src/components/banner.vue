@@ -5,8 +5,7 @@
     </div>
     <div class="banner-warp">
       <div class="promo-title">
-        <span>用 App 打开</span>
-        <span>{{title}}</span>
+        <span v-for="item in title">{{item}}</span>
       </div>
       <div class="button-group">
         <button>极速下载</button>

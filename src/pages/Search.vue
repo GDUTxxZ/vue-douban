@@ -131,13 +131,13 @@ export default {
   color: rgb(66, 189, 86);
 }
 .search-app {
-  border-top: 1px solid #f3f3f3;
+  border-top: 1px solid #e3e3e3;
 }
 .search-app div {
-  border-bottom:  1px solid #f3f3f3;
+  border-bottom:  1px solid #e3e3e3;
 }
 .search-app div a:nth-child(1) {
-  border-right:  1px solid #f3f3f3;
+  border-right:  1px solid #e3e3e3;
 }
 .search-app div a {
   display: inline-block;

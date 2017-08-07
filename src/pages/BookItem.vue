@@ -1,6 +1,6 @@
 <template>
   <div>
-    <banner title="更多文学好书推荐导读"></banner>
+    <banner :title="['用App打开', '更多文学好书推荐']"></banner>
     <div class="main">
       <div class="book">
         <h1>{{book.title}}</h1>
@@ -13,7 +13,7 @@
             <p>{{bookInfo}}</p>
           </div>
           <div>
-            <a href="https://www.douban.com/doubanapp/app?model=B&copy=1&page=&channel=m_ad_yingren&direct_dl=1">用App查看影人资料</a>
+            <a href="https://www.douban.com/doubanapp/app?model=B&copy=1&page=&channel=m_ad_yingren&direct_dl=1">电子书/纸质书购买</a>
             <span>当当网 xx元起</span>
           </div>
         </div>
@@ -23,88 +23,17 @@
         <button>在读</button>
         <button>读过</button>
       </div>
-      <div class="summary">
-        <h2>{{book.title}}的剧情简介</h2>
-        <p>{{isExpand?book.summary:shortSummary}}<span v-if="!isExpand" @click="expand">(展开)</span> </p>
-      </div>
-<!--       <div class="participants">
-        <h2>影人</h2>
+      <Summary :title="book.title + '的内容简介'" :summary="book.summary"></Summary>
+      <div class="tags">
+        <h2>查看更多豆瓣高分好书</h2>
         <ul>
-          <li v-for="item in book.directors">
-            <img :src="item.avatars.small">
-            <span class="participants-name">{{item.name}}</span>
-            <span class="participants-part">导演</span>
-          </li><li v-for="item in book.casts">
-            <img :src="item.avatars.small">
-            <span class="participants-name">{{item.name}}</span>
-            <span class="participants-part">演员</span>
-          </li>
-        </ul>
-      </div> -->
-<!--       <div class="tags">
-        <h2>查看更多豆瓣高分电影电视剧</h2>
-        <ul>
-          <li v-for="item in tags">{{item}}</li>
-        </ul>
-      </div> -->
-<!--       <div class="comment">
-        <h2>{{book.title}}的短评({{comment.total}})</h2>
-        <ul>
-          <li v-for="item in comment.interests">
-            <img :src="item.user.avatar">
-            <div class="comment-main">
-              <div class="user">
-                {{item.user.name}}<stars class="comment-star" width="70" height="18" :rating="item.rating.value * 2"></stars>
-              </div>
-              <span class="time">{{item.create_time}}</span>
-              <p>{{item.comment}}</p>
-              <div class="vote-btn">
-                <div class="vote-btn-right"></div>
-                <div class="vote-btn-left">
-                  <span></span>{{item.vote_count}}
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-        <button>查看全部短评</button>
-      </div> -->
-<!--       <div class="discuss">
-        <h2>讨论({{discuss.total}})</h2>
-        <ul>
-          <li v-for="item in discuss.forum_topics">
-            <div class="discuss-item-title">{{item.title}}</div>
-            <div class="discuss-response-number">{{item.comments_count}}人回应</div>
-          </li>
-        </ul>
-        <button>查看全部讨论</button>
-      </div> -->
-<!--       <div class="review">
-        <h2>{{book.title}}的影评({{review.total}})</h2>
-        <ul>
-          <li v-for="item in review.reviews">
-            <h3>{{item.title}}</h3>
-            {{item.user.name}}<star class="review-star" width="70" height="18" :rating="item.rating.value * 2"></star>
-            <p>{{item.abstract}}</p>
-            <span class="review-useful">{{item.useful_count}} 有用</span>
-          </li>
-        </ul>
-        <button>查看全部影评</button>
-      </div> -->
-      <div class="doulist">
-        <h2>推荐{{book.title}}的豆列</h2>
-        <ul>
-          <li>正在上映</li>
-          <li>想看的电影太多怕忘了</li>
-          <li>豆瓣电影【口碑榜】2017-04-27更新</li>
-          <li>ღ♩♪生活有这些期待很有动力♫♬ღ</li>
-          <li class="line"></li>
-          <li>【中国内地电影票房总排行】</li>
-          <li>影视，良心制作大杂烩</li>
-          <li>那些超五星的电影</li>
-          <li>日常～那些杂七杂八的</li>
+          <li v-for="item in book.tags">{{item.title}}</li>
         </ul>
       </div>
+      <comment :title="book.title" type="book" :id="$route.params.bookId"></comment>
+      <discuss type="book" :id="$route.params.bookId"></discuss>
+      <review :title="book.title" type="book" :id="$route.params.bookId"></review>
+      <interestsOrDoulist :title="'推荐' + book.title + '的豆列'" :propsData="doulistData" type="doulist"></interestsOrDoulist>
     </div>
     <doubanApp></doubanApp>
   </div>
@@ -114,25 +43,31 @@
 import ajax from '../lib/ajax'
 import banner from '../components/banner'
 import stars from '../components/stars'
+import Summary from '../components/summary'
+import interestsOrDoulist from '../components/interestsOrDoulist'
 import doubanApp from '../components/doubanApp'
+import comment from '../components/comment'
+import discuss from '../components/discuss'
+import review from '../components/review'
 export default {
   data () {
     return {
       book: {},
-      comment: {},
-      discuss: {},
-      review: {},
+      annotations: {},
       isGetMovieInfo: false,
-      isGetComment: false,
-      isGetDiscuss: false,
-      isGetReview: false,
-      isExpand: false
+      isGetAnnotations: false,
+      doulistData: [['所有经典书都要看完', '闲着没事读读书', '含英咀华——总有一本适合你', '我的身体有一个游荡的未来'], ['读书即生活', '读书计划', '购书单', '生活中永远保持期待，好书追寻中']]
     }
   },
   components: {
     banner,
     doubanApp,
-    stars
+    stars,
+    Summary,
+    interestsOrDoulist,
+    comment,
+    discuss,
+    review
   },
   computed: {
     bookInfo () {
@@ -144,14 +79,8 @@ export default {
         background: 'url(' + this.book.images.medium + ')'
       }
     },
-    shortSummary () {
-      return this.book.summary.slice(0, 75) + '...'
-    },
-    tags () {
-      return [].concat(this.book.countries, this.book.genres)
-    },
     loading () {
-      return this.isGetComment && this.isGetMovieInfo && this.isGetDiscuss && this.isGetReview
+      return this.isGetMovieInfo && this.isGetAnnotations
     }
   },
   watch: {
@@ -178,57 +107,19 @@ export default {
         url: '/fake',
         method: 'GET',
         query: {
-          url: 'https://m.douban.com/rexxar/api/v2/book/' + this.$route.params.bookId + '/interests',
-          count: 4,
-          order_by: 'hot',
-          start: 0,
-          for_mobile: 1
-        }
-      }).then((value) => {
-        console.log('get comment')
-        this.isGetComment = true
-        this.comment = JSON.parse(value)
-        console.log(this.comment)
-      }, (e) => {
-        console.error(e)
-      })
-      ajax({
-        url: '/fake',
-        method: 'GET',
-        query: {
-          url: 'https://m.douban.com/rexxar/api/v2/book/' + this.$route.params.bookId + '/forum_topics',
-          count: 5,
-          start: 0,
-          for_mobile: 1
-        }
-      }).then((value) => {
-        console.log('get discuss')
-        this.isGetDiscuss = true
-        this.discuss = JSON.parse(value)
-        console.log(this.discuss)
-      }, (e) => {
-        console.error(e)
-      })
-      ajax({
-        url: '/fake',
-        method: 'GET',
-        query: {
           url: 'https://m.douban.com/rexxar/api/v2/book/' + this.$route.params.bookId + '/annotations',
           count: 5,
           start: 0,
           for_mobile: 1
         }
       }).then((value) => {
-        console.log('get review')
-        this.isGetReview = true
-        this.review = JSON.parse(value)
-        console.log(this.review)
+        console.log('get annotations')
+        this.isGetAnnotations = true
+        this.annotations = JSON.parse(value)
+        console.log(this.annotations)
       }, (e) => {
         console.error(e)
       })
-    },
-    expand () {
-      this.isExpand = true
     }
   },
   created () {
@@ -309,38 +200,6 @@ h2 {
   width: 31%;
   color: #ffb712;
 }
-.summary {
-  font-size: 15px;
-  color: #494949;
-  white-space: pre-line;
-  line-height: 25px;
-}
-.summary p span {
-  color: #42bd56;;
-  float: right;
-}
-.participants {
-  white-space: nowrap;
-  overflow-x: auto;
-}
-.participants li {
-  display: inline-block;
-  text-align: center;
-  padding-right: 10px;
-  width: 75px;
-}
-.participants li>* {
-  display: block;
-  margin: 5px 0;
-}
-.participants-part {
-  color: #aaa;
-}
-.participants-name {
-  text-overflow:ellipsis;
-  white-space: nowrap;
-  overflow-x: hidden;
-}
 .tags li{
   display: inline-block;
   background: #eee;
@@ -349,132 +208,6 @@ h2 {
   color: #494949;
   font-size: 15px;
   line-height: 28px;
-  margin-right: 10px;
-}
-.comment li {
-  clear: left;
-  margin-bottom: 30px;
-}
-.comment img {
-  float: left;
-  display: block;
-  width: 36px;
-  border-radius: 18px;
-}
-.comment-main {
-  margin-left: 45px;
-  font-size: 15px;
-}
-.comment-star {
-  position: relative;
-  top: 3px;
-  margin-left: 10px;
-}
-.comment-main span {
-  line-height: 25px;
-  font-size: 12px;
-  color: #aaa;
-}
-.comment-main p {
-  margin: 3px 0;
-  color: #494949;
-}
-.vote-btn-left {
-  color: #ccc;
-  font-size: 14px;
-  margin: 10px 0;
-}
-.vote-btn-left span {
-  background: url('https://img3.doubanio.com/f/talion/7a0756b3b6e67b59ea88653bc0cfa14f61ff219d/pics/card/ic_like_gray.svg');
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  position: relative;
-  top: 5px;
-}
-.vote-btn-right {
-  float: right;
-  background: url('https://img3.doubanio.com/f/talion/be268c0a1adb577c8dfdcfbe48c818af3983ed62/pics/card/more.svg') center;
-  background-repeat: no-repeat;
-  width: 20px;
-  height: 20px;
-  position: relative;
-  top: 3px;
-}
-.comment button, .discuss button, .review button {
-  display: block;
-  text-align: center;
-  width: 100%;
-  background: none;
-  color: #42bd56;
-  font-size: 15px;
-  margin: 10px 0 30px;
-}
-.comment button:focus, .discuss button:focus {
-  outline: none;
-}
-.discuss li {
-  border-bottom: 1px solid #eeeeee;
-  padding: 15px 18px 15px 0;
-}
-.discuss li:nth-last-child(1) {
-  border-bottom: none;
-}
-.discuss-item-title {
-  font-size: 17px;
-  color: #494949;
-  font-weight: 500;
-}
-.discuss-response-number {
-  margin-top: 5px;
-  color: #42bd56;
-}
-.review {
-  color: #494949;
-  font-size: 12px;
-}
-.review li {
-  padding: 15px 18px 15px 0;
-}
-.review h3 {
-  font-weight: normal;
-  font-size: 17px;
-}
-.review p {
-  color: #aaaaaa;
-  padding: 7px 0;
-  line-height: 20px;
-}
-.review-useful {
-  color: #aaaaaa;
-}
-.review-star {
-  position: relative;
-  top: 4px;
-  padding-left: 10px;
-}
-.doulist {
-  margin-top: 10px;
-}
-.doulist ul {
-  white-space: nowrap;
-  overflow-x: auto;
-  text-align: center;
-  padding: 5px 15px 43px 15px;
-  font-size: .94rem;
-}
-.doulist li {
-  height: 50px;
-  line-height: 50px;
-  display: inline-block;
-  border: 1px solid #42bd56;
-  color: #42bd56;
-  padding: 0 1.55rem;
-  border-radius: .25rem;
-}
-.doulist li.line {
-  display: block;
-  height: 10px;
-  border: none;
+  margin: 0 10px 10px 0;
 }
 </style>

@@ -69,7 +69,7 @@ export default {
 }
 .interests li:nth-child(1), .interests li:nth-child(6) {
   color: #42BD56;
-  border-color: blue;
+  border-color: #42BD56;
 }
 .interests li:nth-child(2), .interests li:nth-child(8) {
   color: #FFC46C;

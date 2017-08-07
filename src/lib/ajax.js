@@ -6,13 +6,8 @@
  // }
 export default function (option) {
   var promise = new Promise(function (resolve, reject) {
-    var xmlhttp
+    var xmlhttp = new XMLHttpRequest()
     var data = ''
-    if (window.XMLHttpRequest){ // code for IE7+, Firefox, Chrome, Opera, Safari
-      xmlhttp = new XMLHttpRequest()
-    } else { // code for IE6, IE5
-      xmlhttp = new ActiveXObject("Microsoft.XMLHTTP")
-    }
      //设置请求头
     if (option.RequestHeader) {
       for (let key in option.RequestHeader) {
